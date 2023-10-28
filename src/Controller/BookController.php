@@ -50,7 +50,7 @@ class BookController extends AbstractController
     }
 
     #[Route('/showbook', name: 'showbook')]
-    public function showbook(EntityManagerInterface $em,BookRepository $bookRepository, Request $req): Response
+    public function showbook(BookRepository $bookRepository, Request $req): Response
     {
         $form = $this->createForm(RechercheType::class);
         $form->handleRequest($req);
@@ -58,7 +58,8 @@ class BookController extends AbstractController
         $results = [];
         if ($form->isSubmitted() && $form->isValid()) {
             $ref = $form->get('ref')->getData();
-            $results= $em->getRepository(Book::class)->findBy(['ref'=> $ref]) ;
+           // $results = $this->getDoctrine()->getRepository(Book::class)->findBy(['ref' => $ref]);
+            $results = $bookRepository->Recherche($ref);
             return $this->render('book/showbookAtelier.html.twig', [
                 //'form' => $form->createView(),
                 'results' => $results,
@@ -77,16 +78,16 @@ class BookController extends AbstractController
         ]);
 
     }
-    #[Route('/showbookAuthor/{id}', name: 'showbookAuthor')]
-    public function showbookAuthor($id, BookRepository $bookRepository): Response
-    {
-        $books = $this->getDoctrine()->getRepository(Book::class)->findBy(['author' => $id]);
-
-
-        return $this->render('author/showauthorbook.html.twig', [
-            'booktitle' => $books,
-        ]);
-    }
+//    #[Route('/showbookAuthor/{id}', name: 'showbookAuthor')]
+//    public function showbookAuthor($id, BookRepository $bookRepository): Response
+//    {
+//      //  $books = $this->getDoctrine()->getRepository(Book::class)->findBy(['author' => $id]);
+//        $books = $bookRepository->findBooksByAuthor($id);
+//
+//        return $this->render('author/showauthorbook.html.twig', [
+//            'booktitle' => $books,
+//        ]);
+//    }
 
 
 
@@ -127,18 +128,12 @@ class BookController extends AbstractController
         return $this->redirectToRoute('showbook');
     }
     #[Route('/ShowCondition', name: 'ShowCondition')]
-    /**
-     * Summary of ShowCondition
-     * @param \Doctrine\Persistence\ManagerRegistry $manager
-     * @param \App\Repository\BookRepository $repo
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
     public function ShowCondition(ManagerRegistry $manager, BookRepository $repo): Response
     {
 
         $year = new \DateTime('2015-01-01') ;
         $minBookCount = 20;
-        $books = $repo->findBooksPublishedBeforeYear($year, $minBookCount);
+        $books = $repo->findBooksPublishedBeforeYearWithAuthorBooksCount($year, $minBookCount);
 
         return $this->render('book/list.html.twig', [
             'books' => $books,

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\AuthorRepository;
 use App\Entity\Author;
 use App\Form\AuthorType;
+use App\Repository\BookRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,7 +32,7 @@ class AuthorController extends AbstractController
     public function showDBauthor(AuthorRepository $authorRepo): Response
     {
 
-        $x = $authorRepo->OrderByEmail();
+        $x = $authorRepo->OrderEmail();
         return $this->render('author/showDBauthor.html.twig', [
             'authors' => $x
         ]);
@@ -136,6 +137,16 @@ class AuthorController extends AbstractController
 
         return $this->render('author/details.html.twig', [
             'author' => $author
+        ]);
+    }
+    #[Route('/showbookAuthor/{id}', name: 'showbookAuthor')]
+    public function showbookAuthor($id, BookRepository $bookRepository): Response
+    {
+        //  $books = $this->getDoctrine()->getRepository(Book::class)->findBy(['author' => $id]);
+        $books = $bookRepository->findBooksByAuthor($id);
+
+        return $this->render('author/showauthorbook.html.twig', [
+            'booktitle' => $books,
         ]);
     }
 

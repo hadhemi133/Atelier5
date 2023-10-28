@@ -48,8 +48,8 @@ class BookRepository extends ServiceEntityRepository
 
     public function findBooksByAuthor($authorId)
     {
-        return $this->createQueryBuilder('ba')
-            ->join('ba.Author', 'a')
+        return $this->createQueryBuilder('b')
+            ->join('b.author', 'a')
             ->where('a.id = :authorId')
             ->setParameter('authorId', $authorId)
             ->getQuery()
@@ -63,12 +63,12 @@ class BookRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-    public function findBooksPublishedBeforeYear($year, $minBookCount)
+    public function findBooksPublishedBeforeYearWithAuthorBooksCount($year, $minBookCount)
     {
-        return $this->createQueryBuilder('ba')
-            ->innerJoin('ba.author', 'a')
-            ->select('ba')
-            ->where('ba.publicationdate < :year')
+        return $this->createQueryBuilder('b')
+            ->innerJoin('b.author', 'a')
+            ->select('b')
+            ->where('b.publicationdate < :year')
             ->andWhere('a.nbbooks > :minBookCount')
             ->setParameter('year', $year)
             ->setParameter('minBookCount', $minBookCount)

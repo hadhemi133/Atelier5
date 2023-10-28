@@ -76,9 +76,9 @@ class AuthorRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-    public function OrderByEmail(){
-        return $this->createQueryBuilder('AA')
-            ->orderBy('AA.email','ASC')
+    public function OrderEmail(){
+        return $this->createQueryBuilder('A')
+            ->orderBy('A.email','ASC')
             ->getQuery()
             ->getResult();
     }
